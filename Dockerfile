@@ -1,11 +1,17 @@
-FROM nginx:alpine
+# Etapa 1: construir el JAR
+from rrojano/spring-boot as fuente
+workdir /app 
 
-# Copia tu contenido HTML al directorio público de NGINX
-COPY ./ordinario-ftw /usr/share/nginx/html
+COPY SaludarDatos/pom.xml .
+RUN mvn dependency:go-offline
+COPY SaludarDatos/src ./src
+RUN mvn -DskipTests clean package
 
-# Copia tu configuración personalizada
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+# Etapa 2: imagen final
+FROM rrojano/spring-boot
+WORKDIR /app
 
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Copiar el JAR generado en la etapa anterior
+COPY --from=fuente /app/target/*.jar app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
