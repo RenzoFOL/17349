@@ -2,9 +2,9 @@
 from rrojano/spring-boot as fuente
 workdir /app 
 
-COPY SaludarDatos/pom.xml .
+COPY saludarDatos/pom.xml .
 RUN mvn dependency:go-offline
-COPY SaludarDatos/src ./src
+COPY saludarDatos/src ./src
 RUN mvn -DskipTests clean package
 
 # Etapa 2: imagen final
